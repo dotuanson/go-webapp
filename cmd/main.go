@@ -2,7 +2,13 @@ package main
 
 import (
 	"errors"
+	"github.com/dotuanson/go-webapp/db"
+	"github.com/dotuanson/go-webapp/internal/user"
+	"github.com/dotuanson/go-webapp/internal/ws"
+	"github.com/dotuanson/go-webapp/router"
 	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
+	"log"
 	"net/http"
 )
 
@@ -63,10 +69,24 @@ func toggleTodoStatus(context *gin.Context) {
 }
 
 func main() {
-	router := gin.Default()
-	router.GET("/todos", getTodos)
-	router.GET("/todos/:id", getTodo)
-	router.PATCH("/todos/:id", toggleTodoStatus)
-	router.POST("/todos", addTodo)
-	router.Run("localhost:9090")
+	//router := gin.Default()
+	//router.GET("/todos", getTodos)
+	//router.GET("/todos/:id", getTodo)
+	//router.PATCH("/todos/:id", toggleTodoStatus)
+	//router.POST("/todos", addTodo)
+	//router.Run("localhost:8080")
+	dbConn, err := db.NewDatabase()
+	if err != nil {
+		log.Fatalf("Could not initialize database connection: %s", err)
+	}
+	userRep := user.NewRepository(dbConn.GetDB())
+	userSvc := user.NewService(userRep)
+	userHandler := user.NewHandler(userSvc)
+
+	hub := ws.NewHub()
+	wsHandler := ws.NewHandler(hub)
+	go hub.Run()
+
+	router.InitRouter(userHandler, wsHandler)
+	router.Start("0.0.0.0:8080")
 }
