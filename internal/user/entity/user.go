@@ -1,6 +1,4 @@
-package user
-
-import "context"
+package entity
 
 type User struct {
 	ID       int64  `json:"id"`
@@ -27,17 +25,7 @@ type LoginUserReq struct {
 }
 
 type LoginUserRes struct {
-	accessToken string
+	AccessToken string
 	ID          string `json:"id"`
 	Username    string `json:"username"`
-}
-
-type Repository interface {
-	CreateUser(ctx context.Context, user *User) (*User, error)
-	GetUserByEmail(ctx context.Context, email string) (*User, error)
-}
-
-type Service interface {
-	CreateUser(c context.Context, req *CreateUserReq) (*CreateUserRes, error)
-	Login(c context.Context, req *LoginUserReq) (*LoginUserRes, error)
 }

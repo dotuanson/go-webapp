@@ -1,9 +1,10 @@
-package user
+package service
 
 import (
 	"context"
 	"github.com/dotuanson/go-webapp/util"
 	"github.com/golang-jwt/jwt/v4"
+	"go-webapp/internal/user/entity"
 	"strconv"
 	"time"
 )
@@ -12,19 +13,24 @@ const (
 	secretKey = "1FBiDjpJs5uEZ3qSqWeWUcmdYBzKysBWnmAgQbuQyhfRlG2W0lIBwzDPZq+4xbee\nVdE/j2kJ5FjWn5oGXqB3Vg=="
 )
 
-type service struct {
-	Repository
-	timeout time.Duration
+type UserRepository interface {
+	CreateUser(ctx context.Context, user *entity.User) (*entity.User, error)
+	GetUserByEmail(ctx context.Context, email string) (*entity.User, error)
 }
 
-func NewService(repository Repository) Service {
+type service struct {
+	repository UserRepository
+	timeout    time.Duration
+}
+
+func NewService(repository UserRepository) *service {
 	return &service{
 		repository,
 		time.Duration(2) * time.Second,
 	}
 }
 
-func (s *service) CreateUser(c context.Context, req *CreateUserReq) (*CreateUserRes, error) {
+func (s *service) CreateUser(c context.Context, req *entity.CreateUserReq) (*entity.CreateUserRes, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
@@ -33,18 +39,18 @@ func (s *service) CreateUser(c context.Context, req *CreateUserReq) (*CreateUser
 		return nil, err
 	}
 
-	u := &User{
+	u := &entity.User{
 		Username: req.Username,
 		Email:    req.Email,
 		Password: hashedPassword,
 	}
 
-	r, err := s.Repository.CreateUser(ctx, u)
+	r, err := s.repository.CreateUser(ctx, u)
 	if err != nil {
 		return nil, err
 	}
 
-	res := &CreateUserRes{
+	res := &entity.CreateUserRes{
 		ID:       strconv.Itoa(int(r.ID)),
 		Username: r.Username,
 		Email:    r.Email,
@@ -59,18 +65,18 @@ type MyJWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-func (s *service) Login(c context.Context, req *LoginUserReq) (*LoginUserRes, error) {
+func (s *service) Login(c context.Context, req *entity.LoginUserReq) (*entity.LoginUserRes, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
-	u, err := s.Repository.GetUserByEmail(ctx, req.Email)
+	u, err := s.repository.GetUserByEmail(ctx, req.Email)
 	if err != nil {
-		return &LoginUserRes{}, err
+		return &entity.LoginUserRes{}, err
 	}
 
 	err = util.CheckPassword(req.Password, u.Password)
 	if err != nil {
-		return &LoginUserRes{}, err
+		return &entity.LoginUserRes{}, err
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, MyJWTClaims{
@@ -84,8 +90,12 @@ func (s *service) Login(c context.Context, req *LoginUserReq) (*LoginUserRes, er
 
 	ss, err := token.SignedString([]byte(secretKey))
 	if err != nil {
-		return &LoginUserRes{}, err
+		return &entity.LoginUserRes{}, err
 	}
 
-	return &LoginUserRes{accessToken: ss, Username: u.Username, ID: strconv.Itoa(int(u.ID))}, nil
+	return &entity.LoginUserRes{
+		AccessToken: ss,
+		ID:          strconv.Itoa(int(u.ID)),
+		Username:    u.Username,
+	}, nil
 }
