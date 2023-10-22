@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	_ "github.com/lib/pq"
 	"go-webapp/util"
 )
 
@@ -17,7 +18,10 @@ func TestMain(m *testing.M) {
 		log.Fatal("cannot load config:", err)
 	}
 
-	conn, err := sql.Open(config.DBEngine, config.DBSource)
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
+	if err != nil {
+		log.Fatal("cannot connect to db", err)
+	}
 	testQueries = New(conn)
 
 	os.Exit(m.Run())
