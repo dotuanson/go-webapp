@@ -18,7 +18,7 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: 123
-      POSTGRES_DB: mydatabase
+      POSTGRES_DB: simple_bank
     volumes:
       - ./data:/var/lib/postgresql/data
     ports:
