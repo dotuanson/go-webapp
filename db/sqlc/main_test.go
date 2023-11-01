@@ -2,12 +2,11 @@ package db
 
 import (
 	"database/sql"
+	_ "github.com/lib/pq"
+	"go-webapp/util"
 	"log"
 	"os"
 	"testing"
-
-	_ "github.com/lib/pq"
-	"go-webapp/util"
 )
 
 var testQueries *Queries

@@ -84,7 +84,7 @@ func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]P
 		return nil, err
 	}
 	defer rows.Close()
-	var items []PaymentAccount
+	items := []PaymentAccount{}
 	for rows.Next() {
 		var i PaymentAccount
 		if err := rows.Scan(
