@@ -8,6 +8,9 @@ sqlc:
 	sqlc generate
 
 test:
-	go test -v -cover ./...
+	go test -v -cover -race ./...
 
-.PHONY: migrateup migratedown sqlc test
+server:
+	go run cmd/main.go
+
+.PHONY: migrateup migratedown sqlc test server
