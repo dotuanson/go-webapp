@@ -39,18 +39,18 @@ func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) 
 }
 
 const getTransfer = `-- name: GetTransfer :one
-SELECT id, owner, balance, currency, created_at FROM payment.accounts
+SELECT id, from_account_id, to_account_id, amount, created_at FROM payment.transfers
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetTransfer(ctx context.Context, id int64) (PaymentAccount, error) {
+func (q *Queries) GetTransfer(ctx context.Context, id int64) (PaymentTransfer, error) {
 	row := q.db.QueryRowContext(ctx, getTransfer, id)
-	var i PaymentAccount
+	var i PaymentTransfer
 	err := row.Scan(
 		&i.ID,
-		&i.Owner,
-		&i.Balance,
-		&i.Currency,
+		&i.FromAccountID,
+		&i.ToAccountID,
+		&i.Amount,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -84,7 +84,7 @@ func (q *Queries) ListTransfers(ctx context.Context, arg ListTransfersParams) ([
 		return nil, err
 	}
 	defer rows.Close()
-	var items []PaymentTransfer
+	items := []PaymentTransfer{}
 	for rows.Next() {
 		var i PaymentTransfer
 		if err := rows.Scan(

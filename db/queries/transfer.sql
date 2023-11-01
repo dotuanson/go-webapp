@@ -8,7 +8,7 @@ INSERT INTO payment.transfers (
 ) RETURNING *;
 
 -- name: GetTransfer :one
-SELECT * FROM payment.accounts
+SELECT * FROM payment.transfers
 WHERE id = $1 LIMIT 1;
 
 -- name: ListTransfers :many
