@@ -8,7 +8,7 @@ sqlc:
 	sqlc generate
 
 test:
-	go test -v -cover -race ./...
+	go test -count=1 -v -cover -race ./...
 
 server:
 	go run cmd/main.go
