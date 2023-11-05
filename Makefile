@@ -13,4 +13,7 @@ test:
 server:
 	go run cmd/main.go
 
-.PHONY: migrateup migratedown sqlc test server
+mock:
+	mockgen -package mockdb -destination db/mock/store.go go-webapp/db/sqlc Store
+
+.PHONY: migrateup migratedown sqlc test server mock
