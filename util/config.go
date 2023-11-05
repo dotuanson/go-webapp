@@ -10,6 +10,7 @@ type Config struct {
 	Environment string `mapstructure:"ENVIRONMENT"`
 	DBSource    string `mapstructure:"DB_SOURCE"`
 	DBDriver    string `mapstructure:"DB_DRIVER"`
+	AppAddress  string `mapstructure:"APP_ADDRESS"`
 }
 
 // LoadConfig reads configuration from file or environment variables.
