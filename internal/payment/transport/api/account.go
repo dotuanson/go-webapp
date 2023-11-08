@@ -3,7 +3,9 @@ package api
 import (
 	"database/sql"
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 	db "go-webapp/db/sqlc"
+	"log"
 	"net/http"
 )
 
@@ -27,6 +29,14 @@ func (server *Server) createAccount(ctx *gin.Context) {
 
 	account, err := server.store.CreateAccount(ctx, arg)
 	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			log.Println(pqErr.Code.Name())
+			switch pqErr.Code.Name() {
+			case "foreign_key_violation", "unique_violation":
+				ctx.JSON(http.StatusForbidden, errorResponse(err))
+				return
+			}
+		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
