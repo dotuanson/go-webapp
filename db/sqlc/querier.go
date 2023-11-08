@@ -13,11 +13,14 @@ type Querier interface {
 	CreateAccount(ctx context.Context, arg CreateAccountParams) (PaymentAccount, error)
 	CreateEntry(ctx context.Context, arg CreateEntryParams) (PaymentEntry, error)
 	CreateTransfer(ctx context.Context, arg CreateTransferParams) (PaymentTransfer, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (PaymentUser, error)
 	DeleteAccount(ctx context.Context, id int64) error
+	DeleteUser(ctx context.Context, username string) error
 	GetAccount(ctx context.Context, id int64) (PaymentAccount, error)
 	GetAccountForUpdate(ctx context.Context, id int64) (PaymentAccount, error)
 	GetEntry(ctx context.Context, id int64) (PaymentEntry, error)
 	GetTransfer(ctx context.Context, id int64) (PaymentTransfer, error)
+	GetUser(ctx context.Context, username string) (PaymentUser, error)
 	ListAccounts(ctx context.Context, arg ListAccountsParams) ([]PaymentAccount, error)
 	ListEntries(ctx context.Context, arg ListEntriesParams) ([]PaymentEntry, error)
 	ListTransfers(ctx context.Context, arg ListTransfersParams) ([]PaymentTransfer, error)
