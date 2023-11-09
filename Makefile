@@ -22,4 +22,7 @@ server:
 mock:
 	mockgen -package mockdb -destination db/mock/store.go go-webapp/db/sqlc Store
 
-.PHONY: migrateup migratedown sqlc test server mock migrateup1 migratedown1
+dockercompose:
+	docker compose up --force-recreate --detach --build go-webapp
+
+.PHONY: migrateup migratedown sqlc test server mock migrateup1 migratedown1 dockercompose

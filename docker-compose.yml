@@ -25,3 +25,17 @@ services:
       - "5432:5432"
     networks:
       - go-webapp
+
+  go-webapp:
+    image: go-webapp:latest
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      - DB_SOURCE=postgresql://admin:123@postgres:5432/simple_bank?sslmode=disable
+    container_name: go-webapp
+    restart: always
+    ports:
+      - "8000:8000"
+    networks:
+      - go-webapp
