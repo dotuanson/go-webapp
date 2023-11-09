@@ -9,6 +9,7 @@ RUN go build -o main cmd/main.go
 FROM alpine:3.18
 WORKDIR /app
 COPY --from=builder /app/main .
+COPY dev.env .
 
 RUN addgroup -S app-group && adduser -S app-user -G app-group
 USER app-user
