@@ -80,7 +80,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 }
 
 type getUserRequest struct {
-	Username string `uri:"username" binding:"required,email"`
+	Username string `uri:"username" binding:"required"`
 }
 
 func (server *Server) getUser(ctx *gin.Context) {
@@ -100,7 +100,9 @@ func (server *Server) getUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, user)
+	rsp := newUserResponse(user)
+
+	ctx.JSON(http.StatusOK, rsp)
 }
 
 type loginUserRequest struct {
