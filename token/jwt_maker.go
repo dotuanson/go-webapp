@@ -18,7 +18,6 @@ func NewJWTMaker(secretKey string) (Maker, error) {
 	if len(secretKey) < minSecretKeySize {
 		return nil, fmt.Errorf("invalid key size: must be at least %d characters", minSecretKeySize)
 	}
-	fmt.Printf(secretKey)
 	return &JWTMaker{secretKey}, nil
 }
 

@@ -1,24 +1,35 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	db "go-webapp/db/sqlc"
+	"go-webapp/token"
+	"go-webapp/util"
 )
 
 // Server serves HTTP requests for our banking service.
 type Server struct {
-	store  db.Store
-	router *gin.Engine
+	config     util.Config
+	store      db.Store
+	tokenMaker token.Maker
+	router     *gin.Engine
 }
 
 // NewServer creates a new HTTP server and set up routing.
-func NewServer(store db.Store) (*Server, error) {
-	server := &Server{
-		store: store,
+func NewServer(config util.Config, store db.Store) (*Server, error) {
+	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create token maker: %w", err)
 	}
-	err := server.setupRouter()
+	server := &Server{
+		config:     config,
+		store:      store,
+		tokenMaker: tokenMaker,
+	}
+	err = server.setupRouter()
 	if err != nil {
 		return &Server{}, err
 	}
@@ -39,6 +50,7 @@ func (server *Server) setupRouter() error {
 
 	router.POST("/transfers", server.createTransfer)
 	router.POST("/users", server.createUser)
+	router.POST("/users/login", server.loginUser)
 	router.GET("/users/:username", server.getUser)
 	server.router = router
 	return nil

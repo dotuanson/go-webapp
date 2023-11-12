@@ -19,7 +19,10 @@ func main() {
 		log.Fatalf("could not initialize database connection: %s", err)
 	}
 	store := db.NewStore(conn)
-	server, err := api.NewServer(store)
+	server, err := api.NewServer(config, store)
+	if err != nil {
+		log.Fatal("cannot create server")
+	}
 
 	err = server.Start(config.AppAddress)
 	if err != nil {
