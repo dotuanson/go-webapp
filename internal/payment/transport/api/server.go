@@ -55,8 +55,6 @@ func (server *Server) setupRouter() error {
 	authRoutes.GET("/accounts", server.listAccount)
 
 	authRoutes.POST("/transfers", server.createTransfer)
-
-	authRoutes.GET("/users/:username", server.getUser)
 	server.router = router
 	return nil
 }
