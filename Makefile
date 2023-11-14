@@ -25,4 +25,11 @@ mock:
 dockercompose:
 	docker compose up --force-recreate --detach --build go-webapp
 
-.PHONY: migrateup migratedown sqlc test server mock migrateup1 migratedown1 dockercompose
+proto:
+	rm -f pb/*.go
+	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
+	--go-grpc_out=pb --go-grpc_opt=paths=source_relative \
+	proto/*.proto
+
+
+.PHONY: migrateup migratedown sqlc test server mock migrateup1 migratedown1 dockercompose proto
