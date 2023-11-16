@@ -130,6 +130,11 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		user.Username,
 		server.config.RefreshTokenDuration,
 	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	session, err := server.store.CreateSession(ctx, db.CreateSessionParams{
 		ID:           refreshPayload.ID,
 		Username:     user.Username,

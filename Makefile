@@ -31,5 +31,10 @@ proto:
 	--go-grpc_out=pb --go-grpc_opt=paths=source_relative \
 	proto/*.proto
 
+evans:
+	evans --host localhost --port 8001 -r repl
 
-.PHONY: migrateup migratedown sqlc test server mock migrateup1 migratedown1 dockercompose proto
+redis:
+	docker run --name redis -p 6379:6379 -d redis:7-alpine
+
+.PHONY: migrateup migratedown sqlc test server mock migrateup1 migratedown1 dockercompose proto redis evans

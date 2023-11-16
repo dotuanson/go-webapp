@@ -24,7 +24,15 @@ func main() {
 		log.Fatalf("could not initialize database connection: %s", err)
 	}
 	store := db.NewStore(conn)
-	runGrpcServer(config, store)
+	//
+	//redisOpt := asynq.RedisClientOpt{
+	//	Addr: config.RedisAddress,
+	//}
+	//
+	//taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
+
+	go runGrpcServer(config, store)
+	runGinServer(config, store)
 }
 
 func runGrpcServer(config util.Config, store db.Store) {
